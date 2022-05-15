@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Tmdb from './Tmdb';
+import Tmdb from './API/Tmdb';
 import MovieRow from './components/Row/MovieRow';
 import './App.css';
 import FeaturedMovie from './components/Movies/FeaturedMovie';
@@ -12,12 +12,11 @@ const App = () => {
   const [blackHeader, setBlackHeader] = useState(false);
   useEffect(() => {
     const loadAll = async () => {
-      // pegando a lista total
+
       let list = await Tmdb.getHomeList();
       console.log(list);
       setMovieList(list);
 
-      // Pegando o filme em destaque
       let originals = list.filter(i => i.slug === 'originals');
       let randomChosen = Math.floor(Math.random() * (originals[0].items.results.length - 1));
       let chosen = originals[0].items.results[randomChosen];
@@ -56,7 +55,7 @@ const App = () => {
 
       {movieList.length <= 0 &&
         <div className='loading'>
-          <img src='https://media.filmelier.com/noticias/br/2020/03/Netflix_LoadTime.gif' alt='Carregando' size={13}></img>
+          <img src='https://media.filmelier.com/noticias/br/2020/03/Netflix_LoadTime.gif' alt='Loading' size={13}></img>
         </div>
       }
     </div>

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import './MovieRow.css';
-// import { NavigateBeforeIcon, NavigateNextIcon } from '@mui/icons-material';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import YouTube from 'react-youtube';
+import movieTrailer from 'movie-trailer'
 
 const MovieRow = ({ title, items }) => {
+    const [trailerUrl, setTrailerUrl] = useState("");
     const [scrollX, setScrollX] = useState(0);
 
     const handleLeftArrow = () => {
@@ -21,6 +23,28 @@ const MovieRow = ({ title, items }) => {
         }
         setScrollX(x);
     }
+
+    const opts = {
+        height: "390",
+        width: "100%",
+        playerVars: {
+          autoplay:1,
+        },
+      }
+
+      const handleClick = (movie) => {
+        if(trailerUrl){
+          setTrailerUrl("");
+        }else{
+          movieTrailer(movie?.name || "")
+          .then(url => {
+            const urlParams = new URLSearchParams( new URL(url).search);
+            setTrailerUrl(urlParams.get('v'));
+   
+          }).catch(error => console.log(error))
+        }
+    };
+
     return (
         <div className="movieRow">
             <h2>{title}</h2>
@@ -36,12 +60,17 @@ const MovieRow = ({ title, items }) => {
                     width: items.results.length * 150
                     }}>
                     {items.results.length > 0 && items.results.map((item, key) => (
-                       <div key={key} className="movieRow--item">
+                       <div key={key} onClick={()=> handleClick(item)} className="movieRow--item">
                         <img src={`https://image.tmdb.org/t/p/w300${item.poster_path}`} alt={item.original_title} />
                     </div>
                     ))}
                 </div>
             </div>
+            
+            {trailerUrl && <YouTube
+             videoId={trailerUrl}  
+             opts={opts}
+            />}
         </div>
     );
 }
